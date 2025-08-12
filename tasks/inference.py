@@ -42,6 +42,11 @@ class ValueInference(Dataset):
         self.reward_probs_per_block = reward_probs_per_block
         self.jitter = jitter
 
+        if type(self.reward_sizes_per_block) is not dict:
+            # convert block-wise reward sizes to cue-wise
+            # e.g., convert (1,2) to {0: (1,2), 1: (1,2)}
+            self.reward_sizes_per_block = {cue: self.reward_sizes_per_block for cue in range(ncues)}
+
         self.iti_min = iti_min
         self.iti_max = iti_max # n.b. only used if iti_dist == 'uniform'
         self.iti_p = iti_p
@@ -74,7 +79,7 @@ class ValueInference(Dataset):
 
     def make_trial(self, cue, block_index, iti):
         rew_prob = self.reward_probs_per_block[cue][block_index]
-        rew_size = self.reward_sizes_per_block[block_index]
+        rew_size = self.reward_sizes_per_block[cue][block_index]
         rew = rew_size if self.rng.random() <= rew_prob else 0
         isi = self.reward_times_per_block[block_index]
         if self.jitter > 0:
