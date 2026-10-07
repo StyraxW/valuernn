@@ -68,7 +68,7 @@ class Trial:
         if self.include_reward:
             X = np.hstack([X, y])
         if self.include_null_input:
-            z = (X.sum(axis=1) == 0).astype(np.float)
+            z = (X.sum(axis=1) == 0).astype(float)
             X = np.hstack([X, z[:,None]])
             assert np.all(np.sum(X, axis=1) == 1)
 
